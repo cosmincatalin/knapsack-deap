@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package com.cosminsanda.transport;
+
+message Problem {
+    string problemId = 1;
+    int32 knapsackVolume = 2;
+    repeated Item items = 3;
+}
+
+message Item {
+    string name = 1;
+    int32 value = 2;
+    int32 volume = 3;
+}
