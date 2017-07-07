@@ -20,25 +20,30 @@ logger.setLevel(logging.INFO)
 
 def callback(ch, method, properties, body):
     del properties
-    problem = knapsack_pb2.Problem()
-    problem.ParseFromString(body)
+    try:
+        problem = knapsack_pb2.Problem()
+        problem.ParseFromString(body)
 
-    logger.info("Got a new problem to solve: {0}".format(problem.problemId))
+        logger.info("Got a new problem to solve: {0}".format(problem.problemId))
 
-    items = {}
-    for i in range(len(problem.items)):
-        items[i] = (problem.items[i].volume, problem.items[i].value, problem.items[i].name)
+        items = {}
+        for i in range(len(problem.items)):
+            items[i] = (problem.items[i].volume, problem.items[i].value, problem.items[i].name)
 
-    solver = Solver(items, problem.knapsackVolume)
-    chosen_items = solver.solve()
+        solver = Solver(items, problem.knapsackVolume)
+        chosen_items = solver.solve()
 
-    logger.info("Chossing items:")
-    for idx in chosen_items:
-        logger.info("\t{0}".format(items[idx]))
+        logger.info("Choosing items:")
+        for idx in chosen_items:
+            logger.info("\t{0}".format(items[idx]))
 
-    logger.info("Problem {0} solved. Solution saved. Acknowledging to the queue.".format(problem.problemId))
-    ch.basic_ack(delivery_tag=method.delivery_tag)
-    logger.info("All done. Waiting for the next problem.")
+        logger.info("Problem {0} solved. Solution saved. Acknowledging to the queue.".format(problem.problemId))
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+    except:
+        logger.info("Problem {0} cannot be solved. Will mark it as non solvable.".format(problem.problemId))
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+    finally:
+        logger.info("All done. Waiting for the next problem.")
 
 
 if __name__ == "__main__":
