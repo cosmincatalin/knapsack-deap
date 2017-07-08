@@ -39,7 +39,7 @@ class RequestHandler:
 
             items_list = []
             for idx in chosen_items:
-                items_list.append('{"name":"' + str(items[idx][2]) + '","value":"' + str(items[idx][1]) + '","volume":"' + str(items[idx][0]) + '"}')
+                items_list.append('{"name":"' + str(items[idx][2]) + '","value":' + str(items[idx][1]) + ',"volume":' + str(items[idx][0]) + '}')
 
             solution = '{"items":[' + ",".join(items_list) + ']}'
 
