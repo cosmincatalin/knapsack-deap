@@ -70,8 +70,8 @@ class RequestHandler:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument("host", type=str, help="The host where RabbitMQ is exposed.")
-    parser.add_argument("dbhost", type=str, help="The host where MySQL is exposed.")
+    parser.add_argument("--host", type=str, default="localhost", help="The host where RabbitMQ is exposed.")
+    parser.add_argument("--dbhost", type=str, default="localhost", help="The host where MySQL is exposed.")
     parser.add_argument("--queue", type=str, default="knapsack", help="The queue in RabbitMQ to get messages from.")
     parser.add_argument("--dbport", type=int, default=3306, help="MySQL port.")
     parser.add_argument("--dbuser", type=str, default="root", help="MySQL user.")
