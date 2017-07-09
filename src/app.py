@@ -4,6 +4,7 @@ import mysql.connector
 
 import knapsack_pb2
 import pika
+import time
 from solver import Solver
 
 DESCRIPTION = """
@@ -70,8 +71,8 @@ class RequestHandler:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument("--host", type=str, default="localhost", help="The host where RabbitMQ is exposed.")
-    parser.add_argument("--dbhost", type=str, default="localhost", help="The host where MySQL is exposed.")
+    parser.add_argument("--host", type=str, default="messagebus", help="The host where RabbitMQ is exposed.")
+    parser.add_argument("--dbhost", type=str, default="db", help="The host where MySQL is exposed.")
     parser.add_argument("--queue", type=str, default="knapsack", help="The queue in RabbitMQ to get messages from.")
     parser.add_argument("--dbport", type=int, default=3306, help="MySQL port.")
     parser.add_argument("--dbuser", type=str, default="root", help="MySQL user.")
@@ -80,10 +81,22 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    connection_available = False
+
+    while not connection_available:
+        try:
+            mysql.connector.connect(user=args.dbuser, password=args.dbpass,
+                                      host=args.dbhost,
+                                      database=args.dbname, port=args.dbport)
+            connection_available = True
+        except Exception as e:
+            logger.info("Try again to connect in 1 second")
+            logger.info(e)
+            time.sleep(1)
+
     cnx = mysql.connector.connect(user=args.dbuser, password=args.dbpass,
                                   host=args.dbhost,
                                   database=args.dbname, port=args.dbport)
-
     reqHandler = RequestHandler(cnx)
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=args.host))
