@@ -85,10 +85,11 @@ if __name__ == "__main__":
 
     while not connection_available:
         try:
-            mysql.connector.connect(user=args.dbuser, password=args.dbpass,
+            test_conn = mysql.connector.connect(user=args.dbuser, password=args.dbpass,
                                       host=args.dbhost,
                                       database=args.dbname, port=args.dbport)
             connection_available = True
+            test_conn.disconnect()
         except Exception as e:
             logger.info("Try again to connect in 1 second")
             logger.info(e)
